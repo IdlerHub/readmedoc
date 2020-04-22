@@ -1,14 +1,15 @@
 <template>
     <div class="tree">
         <div class="tree-list">
-            <div class="tree-item" v-for="(first,fir) in tree" :key="fir">
+            <div class="tree-item" v-for="(first,fir) in treeData" :key="fir">
                 <div :class="first.label== selected[0] ? 'first-title title-active':'first-title'" @click="changeFirst(first,fir)">
                     <span>{{first.label}}--{{first.flag}}</span>
-                    <img v-show="!first.flag" class="title-right" src="@/assets/right.png" alt="">
-                    <img v-show="first.flag" class="title-down" src="@/assets/down.png" alt="">
+                    <img v-if="!first.flag" class="title-right" src="@/assets/right.png" alt="">
+                    <img v-else-if="first.label== selected[0]" class="title-down" src="@/assets/down-2.png" alt="">
+                    <img v-else class="title-down" src="@/assets/down-1.png" alt="">
                 </div>
-                <div v-show="first.flag" class="second-list" v-for="(second,sec) in first.children" :key="sec">
-                    <div :class="first.label== selected[0] && second.label==selected[1]  ? 'item-second item-active': 'item-second'" @click="changeSecond(first,second)">
+                <div v-show="first.flag">
+                    <div :class="first.label== selected[0] && second.label==selected[1]  ? 'item-second item-active': 'item-second'" v-for="(second,sec) in first.children" :key="sec" @click="changeSecond(first,second)">
                         <div class="second-title">{{second.label}}</div>
                     </div>
                 </div>
@@ -21,25 +22,24 @@
 <script>
 export default {
     props: {
-        treeData: Array
+        treeData: Array,
     },
     data(){
         return {
             selected: ['',''],
-            tree: []
+            // tree: []
         }
     },
-    mounted(){
+    created(){
         let that = this;
         let treeData = this.treeData;
         treeData.map(item=>{
-            item['flag'] = false;
             that.$set(item,'flag', false)
         })
         this.selected = [treeData[0].label,treeData[0].children[0].label];
         treeData[0].flag = true;
-        this.tree = JSON.parse(JSON.stringify(treeData))
-        console.log(this.tree,this.selected)
+        // this.tree = treeData;
+        // console.log(this.tree,this.selected)
     },
     methods:{
         changeFirst(first,fir){
@@ -69,6 +69,7 @@ export default {
 
 <style lang="scss">
     .tree{
+        background: white;
         .tree-item{
             .first-title{
                 cursor: pointer;
@@ -110,6 +111,15 @@ export default {
             }
         }
     }
-    
+// .second-list-2{
+//     height: 0px;
+//     transition: height 2s;
+// }
+    // .second-list{
+    //     transition: height 2s ease-in-out;
+    //     height: 14px;
+    //     padding: 23px 32px 21px 49px;
+    //     // animation: 3s linear 1s showTree;
+    // }
     
 </style>

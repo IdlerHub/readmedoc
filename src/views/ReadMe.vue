@@ -88,7 +88,6 @@ export default {
 }
 .container-left {
   width: 230px;
-  background: white;
   margin-right: 30px;
 }
 .container-right {
@@ -155,9 +154,6 @@ export default {
         }
         
     }
-  }
-  .right-detail{
-
   }
 }
 </style>

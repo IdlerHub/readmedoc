@@ -32,7 +32,9 @@
 <script scoped>
   import HelpHome from './views/HelpHome';
   import ReadMe from './views/ReadMe';
-  import ShowRight from './components/ShowRight'
+  import ShowRight from './components/ShowRight';
+  // import http from './util/readmeAPI';
+
   export default {
     data() {
       return {
@@ -50,6 +52,10 @@
     },
     methods:{
       changeNav(index){
+        // console.log(http.obj)
+        // http.obj.data().then(res=>{
+        //   console.log("请求",res)
+        // })
         this.nowNav = index;
       }
     }
@@ -72,12 +78,12 @@
   }
   .header-logo{
     margin-right: 19px;
-    img{
+  }
+  .header-logo img{
       width: 48px;
       height: 48px;
       border-radius: 10px; 
     }
-  }
   .header-title{
     font-size:20px;
     // height:20px;
