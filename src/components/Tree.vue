@@ -8,11 +8,13 @@
                     <img v-else-if="first.label== selected[0]" class="title-down" src="@/assets/down-2.png" alt="">
                     <img v-else class="title-down" src="@/assets/down-1.png" alt="">
                 </div>
-                <div v-show="first.flag">
-                    <div :class="first.label== selected[0] && second.label==selected[1]  ? 'item-second item-active': 'item-second'" v-for="(second,sec) in first.children" :key="sec" @click="changeSecond(first,second)">
-                        <div class="second-title">{{second.label}}</div>
+                <transition name="slide-fade">
+                    <div class="test" v-show="first.flag">
+                        <div :class="first.label== selected[0] && second.label==selected[1]  ? 'item-second item-active': 'item-second'" v-for="(second,sec) in first.children" :key="sec" @click="changeSecond(first,second)">
+                            <div class="second-title">{{second.label}}</div>
+                        </div>
                     </div>
-                </div>
+                </transition>
             </div>
         </div>
     </div>
@@ -71,6 +73,7 @@ export default {
     .tree{
         background: white;
         .tree-item{
+            transition: all .3s ease;
             .first-title{
                 cursor: pointer;
                 padding: 22px 29px;
@@ -90,6 +93,23 @@ export default {
                     height: 6px;
                 }
             }
+            .test{
+                overflow: hidden;
+            }
+            .slide-fade-enter-active {
+                transition: all .3s ease-in-out;
+            }
+            .slide-fade-leave-active {
+                transition: all .3s ease-in-out;
+            }
+            .slide-fade-enter{
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            .slide-fade-leave-to {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
             .item-second{
                 cursor: pointer;
                 padding: 23px 32px 21px 49px;
@@ -97,6 +117,7 @@ export default {
                 font-family:PingFang-SC-Medium,PingFang-SC;
                 font-weight:500;
                 color:rgba(102,102,102,1);
+                transition: all .3s ease;
             }
             .title-active{
                 color: #FF3333;

@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./reset.css">
+
+    <script src="./js/vue.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <title>使用说明书</title>
+</head>
+
+<body>
+    <div id="helpHome">
+        <div class="header">
+            <div class="header-logo">
+                <img alt="" src="./assets/jwxt-logo.png">
+            </div>
+            <div class="header-title">
+                <span>教务管理系统</span>
+                <span>使用说明书</span>
+            </div>
+        </div>
+        <div class="center">
+            <div class="nav">
+                <ul>
+                    <li v-for="(item,index) in navList" :key="index" :class="nowNav==index? 'active' : ''"
+                        @click="changeNav(index)">{{item.title}}</li>
+                </ul>
+            </div>
+            <div class="container">
+                <!-- 帮助首页 -->
+                <div class="container-left" v-show="!nowNav">
+                    <div class="left-top">
+                        <div class="title">
+                            <div>新手必读</div>
+                            <div @click="changeNav(1)">
+                                <span>更多</span>
+                                <img alt="more" src="./assets/right.png" />
+                            </div>
+                        </div>
+                        <div class="newbie">
+                            <div class="newbie-item" v-for="(item,index) in readList" :key="index">
+                                <img alt src="./images/video1.png" />
+                                <div class="item-name">{{item.title}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 问题汇总 -->
+                <div class="readme-container" v-show="nowNav">
+                    <div class="container-left-q">
+                        <div class="tree">
+                            <div class="tree-list">
+                                <div class="tree-item" v-for="(first,fir) in tree" :key="fir">
+                                    <div :class="first.label== selected[0] ? 'first-title title-active':'first-title'"
+                                        @click="changeFirst(first,fir)">
+                                        <span>{{first.label}}--{{first.flag}}</span>
+                                        <img v-if="!first.flag" class="title-right" src="./assets/right.png" alt="">
+                                        <img v-else-if="first.label== selected[0]" class="title-down"
+                                            src="./assets/down-2.png" alt="">
+                                        <img v-else class="title-down" src="./assets/down-1.png" alt="">
+                                    </div>
+                                    <div v-show="first.flag" class="second-list"
+                                        v-for="(second,sec) in first.children" :key="sec">
+                                        <div :class="first.label== selected[0] && second.label==selected[1]  ? 'item-second item-active': 'item-second'"
+                                            @click="changeSecond(first,second)">
+                                            <div class="second-title">{{second.label}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <tree :treeData="treeData" @change-selected="changeSelected"></tree> -->
+                    </div>
+                    <div class="container-right">
+                        <div class="right-title">
+                            <span>{{navigationTitle[0]}}</span>
+                            <span>使用说明书</span>
+                        </div>
+                        <div class="right-page">
+                            <div class="right-show">
+                                <div class="article">
+                                    <div class="article-list" v-show="showArticle">
+                                        <div class="article-item" v-for="(item,index) in articleList" :key="index"
+                                            @click="showDetail(item)">
+                                            <div class="item-left">
+                                                <div class="left-title">{{item.title}}</div>
+                                                <div class="left-time">{{item.time}}</div>
+                                            </div>
+                                            <div class="item-right">
+                                                <div class="right-show-num">
+                                                    <span>浏览:</span>
+                                                    <span>{{item.show}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="article-detail" v-show="!showArticle">
+                                        <div class="detail-item">
+                                            <div class="item-title">{{articleDetail.title}}</div>
+                                            <div class="item-time">{{articleDetail.time}}</div>
+                                        </div>
+                                        <div class="content">详情内容</div>
+                                    </div>
+                                </div>
+                                <!-- <Article :articleList="articleList" :showArticle="showArticle"
+                                    @show-detail="showDetail"></Article> -->
+                            </div>
+                            <div class="right-total" v-show="showArticle">
+                                <el-pagination @current-change="changeCurrent" background layout="prev, pager, next"
+                                    :total="100">
+                                </el-pagination>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <ReadMe v-show="nowNav"></ReadMe> -->
+
+                <!-- 右边栏 -->
+                <div class="container-right-main">
+                    <div class="ercode">
+                        <div class="ercode-title">网上老年大学公众号</div>
+                        <div class="ercode-img">
+                            <img src="./images/ercode.jpg" alt />
+                        </div>
+                        <div class="ercode-footer">
+                            <div>关注产品最新动态</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <ShowRight></ShowRight> -->
+            </div>
+        </div>
+
+
+    </div>
+</body>
+
+</html>
+
+<script>
+    new Vue({
+        el: '#helpHome',
+        data: {
+            navList: [
+                { title: '帮助首页' },
+                { title: '问题汇总' }
+            ],
+            nowNav: 0,
+            readList: [
+                { img: "./images/video1.png", title: "开通直播间及认证" },
+                { img: "./images/video1.png", title: "开通直播间及认证" },
+                { img: "./images/video1.png", title: "开通直播间及认证" },
+                { img: "./images/video1.png", title: "开通直播间及认证" },
+                { img: "./images/video1.png", title: "开通直播间及认证" },
+                { img: "./images/video1.png", title: "开通直播间及认证" }
+            ],
+            // 问题汇总
+            showArticle: true,
+            selected: ['', ''], //选中文本
+            tree: [
+                {
+                    label: "新手入门0",
+                    children: [
+                        { label: "新手入门不1" },
+                        { label: "新手入门不2" }
+                    ]
+                },
+                {
+                    label: "新手入门1",
+                    children: [{ label: "直播间认证1" }, { label: "直播间认证2" }]
+                },
+                {
+                    label: "新手入门2",
+                    children: [{ label: "直播间认证3" }, { label: "直播间认证4" }]
+                }
+            ],
+            articleList: [  //文章列表
+                {
+                    title: "直播间认证步骤1",
+                    time: "2020-05-29",
+                    show: 5678
+                },
+                {
+                    title: "直播间认证步骤2",
+                    time: "2020-05-29",
+                    show: 5678
+                }
+            ],
+            articleDetail: {},  //文章详情
+            navigationTitle: ['新手入门', '使用说明书']
+        },
+        created() {
+            let that = this;
+            let tree = this.tree;
+            tree.map(item => {
+                that.$set(item, 'flag', false)
+            });
+            console.log(tree[0])
+            this.selected = [tree[0].label, tree[0].children[0].label];
+            tree[0].flag = true;
+        },
+        methods: {
+            changeNav(index) {
+                // console.log(http.obj)
+                // http.obj.data().then(res=>{
+                //   console.log("请求",res)
+                // })
+                this.nowNav = index;
+            },
+            changeSelected(val) {  //点击左侧列表
+                console.log('点击左侧列表', val)
+                this.showArticle = true;  //重置内容
+            },
+            changeCurrent(e) {
+                console.log('当前页数', e)
+            },
+            // 侧边栏
+            changeFirst(first, fir) {
+                first.flag = !first.flag;
+                console.log(fir)
+            },
+            changeSecond(first, second) {
+                if (this.selected[1] == second.label) {
+                    return
+                } else {
+                    this.selected = [first.label, second.label];
+                    console.log('调用changeSelected,更改显示')
+                    this.changeSelected(this.selected)
+                }
+            },
+            showDetail(item) {  //展示详情
+                // this.showArticle = true;
+                this.articleDetail = item;
+                this.showArticle = false;//控制详情展示内容&页码展示
+            }
+        }
+    })
+</script>
+
+<style>
+    /* app */
+    #helpHome {
+        min-width: 1570px;
+        min-height: 100vh;
+        background: #F7F7F7;
+    }
+
+    .header {
+        height: 120px;
+        background: white;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 0 30px;
+    }
+
+    .header-logo {
+        margin-right: 19px;
+    }
+
+    .header-logo img {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+    }
+
+    .header-title {
+        font-size: 20px;
+        font-family: PingFang-SC-Regular, PingFang-SC;
+        font-weight: 400;
+        color: #333333;
+    }
+
+    .header-title span:first-child {
+        font-family: PingFang-SC-Bold, PingFang-SC;
+        font-weight: bold;
+        position: relative;
+        margin-right: 18px;
+    }
+
+    .header-title span:first-child::after {
+        content: '';
+        position: absolute;
+        top: 6px;
+        right: -18px;
+        height: 16px;
+        border-left: 1px solid #999;
+    }
+
+    .header-title span:last-child {
+        font-family: PingFang-SC-Regular, PingFang-SC;
+        font-weight: 400;
+        margin-left: 18px;
+    }
+
+    .center {
+        margin: 30px;
+    }
+
+    .center .nav {
+        height: 88px;
+        background: white;
+        border-radius: 4px;
+        margin-bottom: 30px;
+        padding-left: 30px;
+        line-height: 88px;
+    }
+
+    .center .nav ul {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        font-size: 16px;
+    }
+
+    .center .nav ul li {
+        width: 120px;
+        height: 100%;
+        text-align: left;
+        font-family: PingFang-SC-Medium, PingFang-SC;
+        color: #666666;
+        margin-right: 40px;
+        cursor: pointer;
+    }
+
+    .center .nav ul .active {
+        font-family: PingFang-SC-Bold, PingFang-SC;
+        font-weight: bold;
+        color: #FF3333;
+        position: relative;
+    }
+
+    .center .nav ul .active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 4px;
+        height: 2px;
+        width: 62px;
+        background: #FF3333;
+    }
+
+    .container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* .container .container-left-main {
+        flex: 1;
+        width: 1180px;
+    } */
+
+    /* 帮助首页 */
+    .container-left {
+        flex: 1;
+    }
+
+    .container-left .left-top {
+        flex: 1;
+        background: white;
+        border-radius: 4px;
+        padding: 30px;
+    }
+
+    .container-left .left-top .title {
+        display: flex;
+        justify-content: space-between;
+        height: 20px;
+        font-weight: bold;
+        color: #333333;
+        line-height: 20px;
+    }
+
+    .container-left .left-top .title div:first-child {
+        flex: 1;
+        text-align: center;
+        font-size: 16px;
+        font-family: PingFang-SC-Bold, PingFang-SC;
+        font-family: PingFang-SC-Bold, PingFang-SC;
+    }
+
+    .container-left .left-top .title div:last-child {
+        align-items: center;
+        font-size: 14px;
+        font-family: PingFang-SC-Medium, PingFang-SC;
+        color: #666666;
+    }
+    .container-left .left-top .title div:last-child:hover{
+        cursor: pointer;
+    }
+    .container-left .left-top .title div:last-child>span {
+        margin-right: 9px;
+    }
+
+    .container-left .left-top .newbie {
+        margin-top: 30px;
+        display: flex;
+    }
+
+    .container-left .left-top .newbie .newbie-item {
+        text-align: center;
+        min-width: 120px;
+        margin-right: 66px;
+        margin-left: 10px;
+        margin-bottom: 62px;
+    }
+
+    .container-left .left-top .newbie .newbie-item:last-child {
+        margin-right: 10px;
+    }
+
+    .container-left .left-top .newbie .newbie-item img {
+        width: 98px;
+        height: 98px;
+    }
+
+    .container-left .left-top .newbie .newbie-item .item-name {
+        margin-top: 17px;
+        font-size: 14px;
+        font-family: PingFang-SC-Medium, PingFang-SC;
+        font-weight: 500;
+        color: #666666;
+    }
+
+    /* 问题汇总 */
+    .readme-container {
+        min-width: 1180px;
+        display: flex;
+    }
+
+    .container-left-q {
+        width: 230px;
+        background: white;
+        margin-right: 30px;
+    }
+
+    .container-right {
+        flex: 1;
+    }
+
+    .container-right .right-title {
+        background: white;
+        padding: 22px 30px;
+        font-size: 16px;
+        font-family: PingFang-SC-Medium, PingFang-SC;
+        font-weight: 500;
+        position: relative;
+    }
+
+    .container-right .right-title::after {
+        content: "";
+        position: absolute;
+        height: 1px;
+        bottom: 0;
+        right: 30px;
+        left: 30px;
+        background: #ededed;
+    }
+
+    .container-right .right-title>span:first-child {
+        margin-right: 32px;
+        color: #666666;
+        position: relative;
+    }
+
+    .container-right .right-title>span:first-child::after {
+        content: "";
+        position: absolute;
+        top: 5px;
+        right: -11px;
+        height: 12px;
+        width: 1px;
+        background: #999999;
+    }
+
+    .container-right .right-title>span:last-child {
+        color: #ff3333;
+    }
+
+    .container-right .right-page .right-show {
+        background: white;
+    }
+
+    .container-right .right-page .right-total {
+        margin-top: 36px;
+        text-align: center;
+    }
+    .container-right .right-page .right-total /deep/ .el-pager .number,
+    .container-right .right-page .right-total /deep/ .btn-next,
+    .container-right .right-page .right-total /deep/ .btn-prev,
+    .container-right .right-page .right-total /deep/ .el-pager .number {
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #e5e5e5;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #666666;
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+        border-radius: 6px;
+        margin: 0 4px 0 0;
+    }
+    .el-pagination.is-background .el-pager li:not(.disabled):hover{
+        color: #FF3333;
+    }
+    .el-pagination.is-background .el-pager li:not(.disabled).active {
+        background: #ff3333;
+        color: white;
+    }
+
+    /* 侧边栏样式 */
+    .tree .tree-item .first-title {
+        cursor: pointer;
+        padding: 22px 29px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
+        font-family: PingFang-SC-Medium, PingFang-SC;
+        font-weight: 500;
+        color: #333333;
+    }
+
+    .tree .tree-item .first-title .title-right {
+        width: 7px;
+        height: 12px;
+    }
+
+    .tree .tree-item .first-title .title-down {
+        width: 11px;
+        height: 6px;
+    }
+
+    .tree .tree-item .item-second {
+        cursor: pointer;
+        padding: 23px 32px 21px 49px;
+        font-size: 14px;
+        font-family: PingFang-SC-Medium, PingFang-SC;
+        font-weight: 500;
+        color: #666666;
+    }
+
+    .tree .tree-item .title-active {
+        color: #FF3333;
+        font-size: 16px;
+        font-family: PingFang-SC-Bold, PingFang-SC;
+        font-weight: bold;
+    }
+
+    .tree .tree-item .item-active {
+        color: #ff3333;
+        border-left: 4px solid #FF3333;
+        background: #fff0f0;
+    }
+
+/* 右边栏 */
+.container-right-main {
+  width: 300px;
+  margin-left: 30px; }
+  .container-right-main .ercode {
+    width: 300px;
+    height: 300px;
+    background: white;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center; }
+    .container-right-main .ercode .ercode-title {
+      height: 20px;
+      font-size: 16px;
+      font-family: PingFang-SC-Bold, PingFang-SC;
+      font-weight: bold;
+      color: #333333;
+      line-height: 20px; }
+    .container-right-main .ercode .ercode-img {
+      width: 151px;
+      height: 151px;
+      margin: 14px 0 12px 0; }
+      .container-right-main .ercode .ercode-img img {
+        width: 100%;
+        height: 100%; }
+    .container-right-main .ercode .ercode-footer {
+      font-size: 14px;
+      font-family: PingFang-SC-Medium, PingFang-SC;
+      font-weight: 500;
+      color: #666666; }
+
+
+    /* 文章列表以及详情样式 */
+    .article-list .article-item {
+        padding: 22px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .article-list .article-item:hover {
+        background: #f5f6fa;
+    }
+
+    .article-list .article-item .item-left {
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        font-family: PingFang-SC-Medium, PingFang-SC;
+        font-weight: 500;
+    }
+
+    .article-list .article-item .item-left .left-title {
+        font-size: 16px;
+        color: #333333;
+        margin-bottom: 7px;
+    }
+
+    .article-list .article-item .item-left .left-time {
+        font-size: 14px;
+        color: #999999;
+    }
+
+    .article-list .article-item .item-right .right-show-num {
+        font-size: 14px;
+        font-family: PingFang-SC-Medium, PingFang-SC;
+        font-weight: 500;
+        color: #999999;
+    }
+
+    .article-detail {
+        padding: 23px 30px;
+    }
+
+    .article-detail .detail-item {
+        font-family: PingFang-SC-Medium, PingFang-SC;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
+
+    .article-detail .detail-item .item-title {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333333;
+        margin-bottom: 7px;
+    }
+
+    .article-detail .detail-item .item-time {
+        font-size: 14px;
+        font-family: PingFang-SC-Medium, PingFang-SC;
+        color: #999999;
+    }
+
+    .article-detail .content {
+        font-size: 14px;
+        font-family: PingFang-SC-Medium, PingFang-SC;
+        font-weight: 500;
+        color: #333333;
+    }
+</style>
